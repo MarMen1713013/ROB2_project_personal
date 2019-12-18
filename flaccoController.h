@@ -22,6 +22,7 @@ static std::vector<Vector3f> obstPos;
 
 // TO ADD AN OBSTACLE TO THE STACK
 static void newObst(const Vector3f newPos);
+
     /*TODO: add a range to those parameters or at least a std implementation*/
 	// to the controller constructor we need to pass the terms for computing the repulsive vector magnitude:
 	// aplha_ : to shape the sigmoid curve of the magnitude
@@ -56,6 +57,7 @@ static void newObst(const Vector3f newPos);
     float eeDis(const VectorXf &Pos, const int numberOfObstacle = 0) const;
     Vector3f eeRepulsiveVelocity(const VectorXf &Pos, const int numberOfObstacle = 0) const;
     bool taskReorder(Task<Eigen::MatrixXf>& stack,const std::vector<Vector3f>& contPoints) const;
+    float cost(const Eigen::Vector3f& pos);
     
 private:
     static bool isObstacle; // --> to verify wether there is an obstacle or not

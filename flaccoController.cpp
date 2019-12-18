@@ -178,13 +178,18 @@ Vector3f FlaccoController::eeRepulsiveVelocity(const VectorXf &Pos, const int nu
 
 bool FlaccoController::taskReorder(Task<Eigen::MatrixXf>& stack,const std::vector<Vector3f>& contPoints) const {
 	/*DISTANCES IN THE CANONICAL ORDER*/
+	//definitions below
 	bool switched = false;
 	int sizeMax = stack.size(), danger{0};
 	std::vector<float> dist(sizeMax);
 	vector<int> stackInd = stack.getInd();
+	//distance computation and ASSIGNMENT to dist, using indices in stackInd
 	for (int i = 0; i < sizeMax; ++i) {
 		int index = stackInd[i];
-		index != 1 ? dist[index] = eeDis(contPoints[index == 0 ? index : index - 1]) : dist[index] = distance_warning + 1; //sum-up of the previous condition
+		//if (not second task) -> compute the distance
+		//else if (second task) -> assign distance = warning + 1
+		    //cost(contPoints(etc..)) skip the second task and match the dimensions of contPoints with dist
+		index != 1 ? dist[index] = cost(contPoints[index == 0 ? index : index - 1]) : dist[index] = distance_warning + 1;
 		if(index == 0) danger = i;
 	}
 
@@ -216,7 +221,7 @@ bool FlaccoController::taskReorder(Task<Eigen::MatrixXf>& stack,const std::vecto
 				//stack.goUpTo(minK, i);// <- we will only reorder distT and push its indices into stack
 				distT.goUpTo(minK, i);
 				switched = true;
-			} //else switched = false; 
+			} //else switched = false;
             // update only if it is in the first iteration on j
             // i.e. if we are sorting the non critical vector
 			danger += distT[i] < distance_critic && j == 0;
@@ -229,4 +234,15 @@ bool FlaccoController::taskReorder(Task<Eigen::MatrixXf>& stack,const std::vecto
 	}
 	stack.setIndices(distT.getInd()); // <- this should recover the standard order if there is no need to swap tasks
 	return switched;
+}
+
+float FlaccoController::cost(Vector3f& pos) {
+    int numObst{static_cast<int> obstPos.size()};
+    float min{eeDis(pos)};
+    float temp{0};
+    for (int i = 1; i < numObst; ++i) {
+        temp = eeDis(pos,i);
+        if(temp < min) min = temp;
+    }
+    return min;
 }
