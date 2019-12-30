@@ -244,7 +244,7 @@ float FlaccoController::cost(Vector3f& pos) {
     int numObst{static_cast<int> obstPos.size()};
     float min{eeDis(pos)};
     float temp{0};
-    for (int i = 1; i < numObst; ++i) {
+    for (int i = 0; i < numObst; ++i) {
         temp = eeDis(pos,i);
         if(temp < min) min = temp;
     }
